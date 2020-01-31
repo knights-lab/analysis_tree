@@ -40,4 +40,4 @@ qiime taxa barplot \
   --i-table dada2-paired-end-table.qza \
   --i-taxonomy taxonomy-paired-end.qza \
   --m-metadata-file metadata.tsv \
-  --o-visualization taxa-bar-plots.qzv
+  --o-visualization taxa-bar-paired-end-plots.qzv

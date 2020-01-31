@@ -120,3 +120,19 @@ qiime taxa barplot \
   --o-visualization taxa-bar-plots.qzv
 ```
 
+Had to re-run the entire paired-end analysis because I included non-alphanumeric characters in the sample names.
+Compiled the analysis into a script, and it appears to have failed to assign taxonomy to all things but the BLANKS.
+I have a hunch that the leading 0s are what is causing us to lose the samples.
+To strip them, you can run this `str.strip()` in the format basenames code.
+Nevertheless, I am going to attempt to align them with pre-made naive bayes database.
+
+### UNITE 7
+
+Download the database
+```bash
+wget https://s3-us-west-2.amazonaws.com/qiime2-data/community-contributions-data-resources/2018.11-unite-classifier/unite-ver7-99-classifier-01.12.2017.qza
+```
+
+I paused this for now, results are back in from without this step and removing the leading period seemed to work.
+
+The ITS1 analysis looks good to me, Pb and Ff are what we expected.

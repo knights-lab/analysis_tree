@@ -7,7 +7,7 @@ import re
 
 
 def format_basename(filename):
-    return re.sub('[^0-9a-zA-Z]+', '.', '.'.join(os.path.basename(filename).split('.')[:-1]))
+    return re.sub('[^0-9a-zA-Z]+', '.', '.'.join(os.path.basename(filename).split('.')[:-1])).strip(".")
 
 
 def main(input_folder: str, outfp_manifest: str, outfp_metadata: str) -> None:
