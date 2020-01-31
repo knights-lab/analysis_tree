@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 scripts/make_manifest_metadata.py \
-  data/processed/ITS1 data/processed/ITS1/fastq_manifest.csv \
-  data/processed/ITS1/metadata.tsv
+  data/processed/ITS2 data/processed/ITS2/fastq_manifest.csv \
+  data/processed/ITS2/metadata.tsv
 
-cd data/processed/ITS1
+cd data/processed/ITS2
 
 qiime tools import \
   --type "SampleData[PairedEndSequencesWithQuality]" \
@@ -13,8 +13,8 @@ qiime tools import \
 
 qiime cutadapt trim-paired \
   --i-demultiplexed-sequences demux.qza \
-  --p-front-f CTTGGTCATTTAGAGGAAGNTAA \
-  --p-front-r GCTGCGTTCTTCATCGANTGC \
+  --p-front-f TCGATGAAGAACGCAGCG \
+  --p-front-r TCCTCCGCTTATTGATATGC \
   --o-trimmed-sequences demux-trimmed.qza
 
 qiime demux summarize \

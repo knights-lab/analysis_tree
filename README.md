@@ -136,3 +136,23 @@ wget https://s3-us-west-2.amazonaws.com/qiime2-data/community-contributions-data
 I paused this for now, results are back in from without this step and removing the leading period seemed to work.
 
 The ITS1 analysis looks good to me, Pb and Ff are what we expected.
+
+To run the entire analysis for ITS1 simply run the command.
+
+```bash
+scripts/run_its1_paired_end_analysis.sh
+scripts/run_its1_single_end_analysis.sh
+```
+
+```bash
+scripts/run_its2_paired_end_analysis.sh
+scripts/run_its2_single_end_analysis.sh
+```
+
+We will also want to re-run the analysis with cutadapt + SHI7 + BURST alignment.
+
+```bash
+#TODO: Next step, is to run the 16S analysis with DADA2 and QIIME2.
+#TODO: Ask Jonathon what the length of the amplicon region is.
+#TODO Setup a meeting with Jonathon
+```
