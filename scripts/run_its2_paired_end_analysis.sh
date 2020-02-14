@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-scripts/make_manifest_metadata.py \
-  data/processed/ITS2 data/processed/ITS2/fastq_manifest.csv \
-  data/processed/ITS2/metadata.tsv
+#conda activate qiime2-2019.10
+cd /mnt/data/code/analysis_tree/data/processed/ITS2/shi7_learning/fastqs
 
-cd data/processed/ITS2
+/mnt/data/code/analysis_tree/scripts/make_manifest_metadata.py \
+  ./ \
+  ./fastq_manifest.csv \
+  ./metadata.tsv
 
 qiime tools import \
   --type "SampleData[PairedEndSequencesWithQuality]" \
@@ -40,7 +42,7 @@ qiime metadata tabulate \
   --o-visualization dada2-paired-end-stats.qzv
 
 qiime feature-classifier classify-sklearn \
-  --i-classifier ../unite/unite-ver8-99-classifier-02.02.2019.qza \
+  --i-classifier ../../../unite/unite-ver8-99-classifier-02.02.2019.qza \
   --i-reads dada2-paired-end-rep-seqs.qza \
   --o-classification taxonomy-paired-end.qza
 

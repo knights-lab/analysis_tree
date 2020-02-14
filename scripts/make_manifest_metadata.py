@@ -11,7 +11,7 @@ def format_basename(filename):
 
 
 def main(input_folder: str, outfp_manifest: str, outfp_metadata: str) -> None:
-    files = glob(f"{input_folder}/*.fastq")
+    files = glob(f"{input_folder}/*.fq")
     # basenames = [format_basename(_) for _ in files]
     fp_forward = [os.path.realpath(_) for _ in files if ".R1." in _ or "_R1_" in _]
     name_forward = [format_basename(_.replace(".R1.", "")) for _ in files if ".R1." in _ or "_R2_" in _]
