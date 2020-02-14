@@ -156,3 +156,232 @@ We will also want to re-run the analysis with cutadapt + SHI7 + BURST alignment.
 #TODO: Ask Jonathon what the length of the amplicon region is.
 #TODO Setup a meeting with Jonathon
 ```
+
+
+# 16S with pre-analysis using shi7
+```bash
+# Removing leading _s
+for FILE in `ls`; do mv $FILE `echo $FILE | sed -e 's:^_*::'`; done
+shi7_learning
+shi7_cmd.sh
+```
+
+```bash
+qiime tools import \
+--input-path ./combined_seqs.fna \
+--output-path ./combined_seqs.qza \
+--type 'SampleData[Sequences]' \
+--input-format 'QIIME1DemuxFormat'
+```
+
+Rewrote the make manifest script to handle the output from shi7.
+```bash
+scripts/make_manifest_single_end.py data/processed/16S/shi7_learning/fastqs/ data/processed/16S/shi7_learning/fastqs/fastqmanifest.txt data/processed/16S/shi7_learning/fastqs/metadata.tsv
+```
+
+We should double check that the phred33 single-end fastq manifest is the correct way to import into qiime2 from shi7 flash.
+```bash
+qiime tools import \
+ --type "SampleData[JoinedSequencesWithQuality]" \
+ --input-path fastqmanifest.txt \
+ --output-path demux.qza \
+ --input-format SingleEndFastqManifestPhred33
+```
+
+```bash
+qiime dada2 denoise-single \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left 0 \
+  --p-trunc-len 500 \
+  --o-representative-sequences dada2-single-end-rep-seqs.qza \
+  --o-table dada2-single-end-table.qza \
+  --o-denoising-stats dada2-single-end-stats.qza
+
+
+```
+
+So I noticed that almost none of the dada2 denoised made it past the stage of chimeric.
+We are going to retry by running shi7 no stitching, analyze the quality scores, then run both dada2 paired- and singled-end.
+
+```bash
+for f in *.fq; do
+    mv -- "$f" "$(basename -- "$f" .fq).fastq"
+done
+
+
+../../../../../scripts/make_manifest_metadata.py ./ ./fastqmanifest.txt ./metadata.txt
+
+qiime tools import \
+  --type "SampleData[PairedEndSequencesWithQuality]" \
+  --input-path fastqmanifest.txt \
+  --output-path paired-end-16S-demux.qza \
+  --input-format PairedEndFastqManifestPhred33
+```
+
+```bash
+qiime demux summarize \
+ --i-data paired-end-16S-demux.qza \
+ --o-visualization paired-end-16S-demux.qzv
+```
+
+```bash
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs paired-end-demux.qza \
+  --p-trim-left-f 20 \
+  --p-trunc-len-f 240 \
+  --p-trim-left-r 20 \
+  --p-trunc-len-r 200 \
+  --o-table dada2-paired-end-table.qza \
+  --o-representative-sequences dada2-paired-end-rep-seqs.qza \
+  --o-denoising-stats dada2-paired-end-stats.qza
+
+qiime metadata tabulate \
+  --m-input-file dada2-paired-end-stats.qza \
+  --o-visualization dada2-paired-end-stats.qzv
+```
+
+```bash
+qiime dada2 denoise-single \
+  --i-demultiplexed-seqs demux-trimmed.qza \
+  --p-trim-left 20 \
+  --p-trunc-len 240 \
+  --o-representative-sequences dada2-single-end-16S-stats.qza \
+  --o-table dada2-single-end-16S-table.qza \
+  --o-denoising-stats dada2-single-end-16S-stats.qz
+
+qiime metadata tabulate \
+  --m-input-file dada2-single-end-16S-stats.qza \
+  --o-visualization dada2-single-end-16S-stats.qzv
+```
+
+We were able to get more reads out of the paired-end filter sequences by increasing the trimming range.
+Let us try this on the shi7 stitched reads instead with higher quality scores.
+
+```bash
+qiime dada2 denoise-single \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left 0 \
+  --p-trunc-len 450 \
+  --o-representative-sequences dada2-stats.qza \
+  --o-table dada2-table.qza \
+  --o-denoising-stats dada2-stats.qza
+
+qiime metadata tabulate \
+  --m-input-file dada2-stats.qza \
+  --o-visualization dada2-stats.qzv
+
+qiime dada2 denoise-single \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left 20 \
+  --p-trunc-len 450 \
+  --o-representative-sequences dada2-beg-stats.qza \
+  --o-table dada2-beg-table.qza \
+  --o-denoising-stats dada2-beg-stats.qza
+
+qiime metadata tabulate \
+  --m-input-file dada2-beg-stats.qza \
+  --o-visualization dada2-beg-stats.qzv
+```
+
+We wanted to detect if it was the beginning or the end of the read that was causing the problems for dada2.
+
+```bash
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left-f 0 \
+  --p-trunc-len-f 240 \
+  --p-trim-left-r 0 \
+  --p-trunc-len-r 200 \
+  --o-table dada2-beg-table.qza \
+  --o-representative-sequences dada2-beg-rep-seqs.qza \
+  --o-denoising-stats dada2-beg-stats.qza
+
+qiime metadata tabulate \
+  --m-input-file dada2-beg-stats.qza \
+  --o-visualization dada2-beg-stats.qzv
+
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left-f 20 \
+  --p-trunc-len-f 250 \
+  --p-trim-left-r 20 \
+  --p-trunc-len-r 250 \
+  --o-table dada2-beg-table.qza \
+  --o-representative-sequences dada2-end-rep-seqs.qza \
+  --o-denoising-stats dada2-end-stats.qza
+
+qiime metadata tabulate \
+  --m-input-file dada2-end-stats.qza \
+  --o-visualization dada2-end-stats.qzv
+```
+Both the beginning and end of the reads caused a significant amount of reads to be degenerated.
+
+For the final analysis, we will trim both sides.
+
+```bash
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left-f 20 \
+  --p-trunc-len-f 240 \
+  --p-trim-left-r 20 \
+  --p-trunc-len-r 200 \
+  --o-table dada2-paired-end-table.qza \
+  --o-representative-sequences dada2-paired-end-rep-seqs.qza \
+  --o-denoising-stats dada2-paired-end-stats.qza
+
+qiime metadata tabulate \
+  --m-input-file dada2-paired-end-stats.qza \
+  --o-visualization dada2-paired-end-stats.qzv
+
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left-f 20 \
+  --p-trunc-len-f 240 \  
+  --o-table dada2-single-end-table.qza \
+  --o-representative-sequences dada2-single-end-rep-seqs.qza \
+  --o-denoising-stats dada2-single-end-stats.qza
+
+qiime metadata tabulate \
+  --m-input-file dada2-single-end-stats.qza \
+  --o-visualization dada2-single-end-stats.qzv
+```
+
+So the reason that shi7 doesn't work very well is due to the length of the stiching.
+Some of the sequences are longer than the ~250 bp region.
+We can fix this with the shi7 stitching mechanism.
+There are flags for `--min_overlap`, set to 
+
+```bash
+qiime tools import \
+--type "SampleData[SequencesWithQuality]" \
+--input-path fastqmanifest.csv \
+--output-path demux.qza \
+--input-format SingleEndFastqManifestPhred33
+
+qiime demux summarize \
+ --i-data demux.qza \
+ --o-visualization demux.qzv
+
+qiime dada2 denoise-single \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left 0 \
+  --p-trunc-len 225 \
+  --o-table dada2-single-end-table.qza \
+  --o-representative-sequences dada2-single-end-rep-seqs.qza \
+  --o-denoising-stats dada2-single-end-stats.qza
+
+qiime metadata tabulate \
+  --m-input-file dada2-single-end-stats.qza \
+  --o-visualization dada2-single-end-stats.qzv
+
+qiime feature-classifier classify-sklearn \
+  --i-classifier ../../../../databases/silva-132-99-515-806-nb-classifier.qza \
+  --i-reads dada2-single-end-rep-seqs.qza \
+  --o-classification taxonomy-single-end.qza
+
+qiime taxa barplot \
+  --i-table dada2-single-end-table.qza \
+  --i-taxonomy taxonomy-single-end.qza \
+  --m-metadata-file metadata.tsv \
+  --o-visualization taxa-bar-single-end-plots.qzv
+```

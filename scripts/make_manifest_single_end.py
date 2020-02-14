@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# make_manifest_single_end.py <input_folder> <output_file_manifest> <output_file_metadata>
 import sys
 from glob import glob
 import os
@@ -11,30 +12,24 @@ def format_basename(filename):
 
 
 def main(input_folder: str, outfp_manifest: str, outfp_metadata: str) -> None:
-    files = glob(f"{input_folder}/*.fastq")
-    # basenames = [format_basename(_) for _ in files]
-    fp_forward = [os.path.realpath(_) for _ in files if ".R1." in _ or "_R1_" in _]
-    name_forward = [format_basename(_.replace(".R1.", "")) for _ in files if ".R1." in _ or "_R2_" in _]
-
-    fp_reverse = [os.path.realpath(_) for _ in files if ".R2." in _ or "_R2_" in _]
-    name_reverse = [format_basename(_.replace(".R2.", "")) for _ in files if ".R2." in _ or "_R2_" in _]
+    files = glob(f"{input_folder}/*.fq")
+    files = [os.path.realpath(_) for _ in files]
+    names = [format_basename(_) for _ in files]
 
     with open(outfp_manifest, "w") as outf_manifest:
         csv_out = csv.writer(outf_manifest)
         csv_out.writerow(["sample-id", "absolute-filepath", "direction"])
-        for name, fp in zip(name_forward, fp_forward):
+        for name, fp in zip(names, files):
             csv_out.writerow([name, fp, "forward"])
-        for name, fp in zip(name_reverse, fp_reverse):
-            csv_out.writerow([name, fp, "reverse"])
 
     with open(outfp_metadata, "w") as outf_metada:
         csv_out = csv.writer(outf_metada, delimiter="\t")
         csv_out.writerow(["sample-id",	"category"])
         csv_out.writerow(["#q2:types",	"categorical"])
-        for name in name_forward:
+        for name in names:
             if ".Pb." in name:
                 cat = "Pb"
-            elif ".Ff." in name or ".F." in name:
+            elif (".Ff." in name) or (".F." in name):
                 cat = "Ff"
             else:
                 cat = "NA"
