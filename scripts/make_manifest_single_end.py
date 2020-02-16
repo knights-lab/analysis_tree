@@ -13,6 +13,7 @@ def format_basename(filename):
 
 def main(input_folder: str, outfp_manifest: str, outfp_metadata: str) -> None:
     files = glob(f"{input_folder}/*.fq")
+    print(files)
     files = [os.path.realpath(_) for _ in files]
     names = [format_basename(_) for _ in files]
 

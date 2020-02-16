@@ -385,3 +385,5 @@ qiime taxa barplot \
   --m-metadata-file metadata.tsv \
   --o-visualization taxa-bar-single-end-plots.qzv
 ```
+
+In the ITS1 band, the samples from several of the samples aren't quite what we expected.
