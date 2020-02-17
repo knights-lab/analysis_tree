@@ -39,3 +39,4 @@ qiime taxa barplot \
   --i-taxonomy taxonomy-single-end.qza \
   --m-metadata-file metadata.tsv \
   --o-visualization taxa-bar-single-end-plots.qzv
+
