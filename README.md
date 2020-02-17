@@ -385,3 +385,12 @@ qiime taxa barplot \
   --m-metadata-file metadata.tsv \
   --o-visualization taxa-bar-single-end-plots.qzv
 ```
+
+# Lab meeting
+* Fungus
+** Redo with just the R1 reads for the fungal analysis
+* 16S
+** Up the minimum sequence length
+** Estimate the beta-diversity with chao1 + shannon for the 16S
+** Richness across the species rather than the amount of the taxonomic tree
+*** Also possibly jus the counts overall
