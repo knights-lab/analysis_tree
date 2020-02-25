@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd data/processed/ITS2
+cd /mnt/data/code/analysis_tree/data/processed/ITS2/shi7_learning/fastqs
 
 qiime dada2 denoise-single \
   --i-demultiplexed-seqs demux-trimmed.qza \
@@ -14,7 +14,7 @@ qiime metadata tabulate \
   --o-visualization dada2-single-end-stats.qzv
 
 qiime feature-classifier classify-sklearn \
-  --i-classifier ../unite/unite-ver8-99-classifier-02.02.2019.qza \
+  --i-classifier ../../../unite/unite-ver8-99-classifier-02.02.2019.qza \
   --i-reads dada2-single-end-rep-seqs.qza \
   --o-classification taxonomy-single-end.qza
 

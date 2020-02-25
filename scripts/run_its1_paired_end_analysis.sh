@@ -13,11 +13,25 @@ qiime tools import \
   --output-path demux.qza \
   --input-format PairedEndFastqManifestPhred33
 
+#qiime cutadapt trim-paired \
+#  --i-demultiplexed-sequences demux.qza \
+#  # 3' rc of the reverse primer \
+#  --p-adapter-f GCANTCGATGAAGAACGCAGC \
+#  # 5' forward primer \
+#  --p-front-f CTTGGTCATTTAGAGGAAGNTAA \
+#  # 5' rc of the forward primer \
+#  --p-adapter-r TTANCTTCCTCTAAATGACCAAG \
+#  # 3' reverse primer \
+#  --p-front-r GCTGCGTTCTTCATCGANTGC \
+#  --o-trimmed-sequences demux-trimmed.qza
+
 qiime cutadapt trim-paired \
   --i-demultiplexed-sequences demux.qza \
+  --p-adapter-f GCANTCGATGAAGAACGCAGC \
   --p-front-f CTTGGTCATTTAGAGGAAGNTAA \
+  --p-adapter-r TTANCTTCCTCTAAATGACCAAG \
   --p-front-r GCTGCGTTCTTCATCGANTGC \
-  --o-trimmed-sequences demux-trimmed.qza
+  --o-trimmed-sequences demuxu-trimmed.qza
 
 qiime demux summarize \
  --i-data demux.qza \

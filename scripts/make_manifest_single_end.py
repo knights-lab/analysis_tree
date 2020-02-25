@@ -33,7 +33,7 @@ def main(input_folder: str, outfp_manifest: str, outfp_metadata: str) -> None:
             elif (".Ff." in name) or (".F." in name):
                 cat = "Ff"
             else:
-                cat = "NA"
+                cat = "Blank"
             csv_out.writerow([name, cat])
 
 

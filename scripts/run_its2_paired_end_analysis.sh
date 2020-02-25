@@ -16,7 +16,9 @@ qiime tools import \
 qiime cutadapt trim-paired \
   --i-demultiplexed-sequences demux.qza \
   --p-front-f TCGATGAAGAACGCAGCG \
+  --p-adapter-f GCATATCAATAAGCGGAGGA \
   --p-front-r TCCTCCGCTTATTGATATGC \
+  --p-adapter-r CGCTGCGTTCTTCATCGA \
   --o-trimmed-sequences demux-trimmed.qza
 
 qiime demux summarize \

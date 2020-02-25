@@ -20,7 +20,7 @@ qiime demux summarize \
 qiime dada2 denoise-single \
   --i-demultiplexed-seqs demux.qza \
   --p-trim-left 0 \
-  --p-trunc-len 225 \
+  --p-trunc-len 280 \
   --o-table dada2-single-end-table.qza \
   --o-representative-sequences dada2-single-end-rep-seqs.qza \
   --o-denoising-stats dada2-single-end-stats.qza

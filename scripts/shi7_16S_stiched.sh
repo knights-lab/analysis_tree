@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# conda activate shi7
 cd /mnt/data/code/analysis_tree/data/processed/16S
 
 for FILE in `ls`; do mv $FILE `echo $FILE | sed -e 's:^_*::'`; done
@@ -14,4 +15,4 @@ shi7 --input  ./ \
  --convert_fasta False \
  --min_overlap 280 \
  --max_overlap 300 \
- --filter_length 225
+ --filter_length 280
