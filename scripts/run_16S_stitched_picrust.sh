@@ -5,8 +5,8 @@ cd /mnt/data/code/analysis_tree/data/processed/16S/shi7_learning/fastqs_stitched
 qiime picrust2 full-pipeline \
    --i-table dada2-single-end-table.qza \
    --i-seq dada2-single-end-rep-seqs.qza \
-   --output-dir q2-picrust2_output \
-   --p-threads 40 \
+   --output-dir q2-picrust2_output_50 \
+   --p-threads 32 \
    --p-hsp-method mp \
    --p-max-nsti 2 \
    --verbose
